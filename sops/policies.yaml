@@ -1,0 +1,110 @@
+sops:
+
+  - id: CYCLING_WIND_01
+    activity: cycling
+    severity: high
+    condition:
+      field: wind_speed_10m
+      operator: ">"
+      value: 40
+    decision: restricted
+    guidance: "Cycling is restricted when wind speed exceeds 40 km/h."
+
+  - id: CYCLING_RAIN_01
+    activity: cycling
+    severity: high
+    condition:
+      field: precipitation
+      operator: ">"
+      value: 10
+    decision: restricted
+    guidance: "Cycling is restricted when precipitation exceeds 10 mm."
+
+  - id: CYCLING_UV_01
+    activity: cycling
+    severity: moderate
+    condition:
+      field: uv_index
+      operator: ">"
+      value: 8
+    decision: caution
+    guidance: "Cycling requires caution when the UV index exceeds 8."
+
+  - id: CYCLING_WIND_02
+    activity: cycling
+    severity: moderate
+    condition:
+      field: wind_speed_10m
+      operator: ">"
+      value: 25
+    decision: caution
+    guidance: "Cycling requires caution when wind speed exceeds 25 km/h."
+
+  - id: HIKING_WIND_01
+    activity: hiking
+    severity: high
+    condition:
+      field: wind_speed_10m
+      operator: ">"
+      value: 50
+    decision: restricted
+    guidance: "Hiking is restricted when wind speed exceeds 50 km/h."
+
+  - id: HIKING_RAIN_01
+    activity: hiking
+    severity: high
+    condition:
+      field: precipitation
+      operator: ">"
+      value: 20
+    decision: restricted
+    guidance: "Hiking is restricted when precipitation exceeds 20 mm."
+
+  - id: HIKING_UV_01
+    activity: hiking
+    severity: moderate
+    condition:
+      field: uv_index
+      operator: ">"
+      value: 8
+    decision: caution
+    guidance: "Hiking requires caution when the UV index exceeds 8."
+
+  - id: WATER_WIND_01
+    activity: water_activity
+    severity: high
+    condition:
+      field: wind_speed_10m
+      operator: ">"
+      value: 35
+    decision: restricted
+    guidance: "Water activities are restricted when wind speed exceeds 35 km/h."
+
+  - id: WATER_RAIN_01
+    activity: water_activity
+    severity: moderate
+    condition:
+      field: precipitation
+      operator: ">"
+      value: 10
+    decision: caution
+    guidance: "Water activities require caution when precipitation exceeds 10 mm."
+
+  - id: WATER_UV_01
+    activity: water_activity
+    severity: moderate
+    condition:
+      field: uv_index
+      operator: ">"
+      value: 8
+    decision: caution
+    guidance: "Water activities require caution when the UV index exceeds 8."
+
+  - id: OUTDOOR_THUNDERSTORM_01
+    activity: all_outdoor
+    severity: critical
+    condition:
+      type: weather_event
+      event: thunderstorm
+    decision: prohibited
+    guidance: "Outdoor activity is prohibited when thunderstorms are active."
