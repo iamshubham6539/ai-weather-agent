@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Is it safe to cycle in Bangalore?",
+    "activity": "cycling",
+    "weather": {
+      "wind_speed_10m": 45,
+      "precipitation": 0,
+      "uv_index": 0,
+      "weather_code": 3
+    },
+    "expected_sop": "CYCLING_WIND_01",
+    "expected_decision": "restricted"
+  },
+  {
+    "query": "Can I cycle?",
+    "activity": "cycling",
+    "weather": {
+      "wind_speed_10m": 30,
+      "precipitation": 0,
+      "uv_index": 0,
+      "weather_code": 3
+    },
+    "expected_sop": "CYCLING_WIND_02",
+    "expected_decision": "caution"
+  },
+  {
+    "query": "Can I go hiking?",
+    "activity": "hiking",
+    "weather": {
+      "wind_speed_10m": 55,
+      "precipitation": 0,
+      "uv_index": 0,
+      "weather_code": 3
+    },
+    "expected_sop": "HIKING_WIND_01",
+    "expected_decision": "restricted"
+  },
+  {
+    "query": "Can I go outside?",
+    "activity": "hiking",
+    "weather": {
+      "wind_speed_10m": 10,
+      "precipitation": 0,
+      "uv_index": 0,
+      "weather_code": 95
+    },
+    "expected_sop": "OUTDOOR_THUNDERSTORM_01",
+    "expected_decision": "prohibited"
+  },
+  {
+    "query": "Is water activity safe?",
+    "activity": "water",
+    "weather": {
+      "wind_speed_10m": 40,
+      "precipitation": 0,
+      "uv_index": 0,
+      "weather_code": 3
+    },
+    "expected_sop": "WATER_WIND_01",
+    "expected_decision": "restricted"
+  }
+]

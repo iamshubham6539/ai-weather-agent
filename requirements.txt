@@ -1,3 +1,11 @@
+langchain
 langchain-huggingface
 langgraph
-dotenv
+huggingface-hub
+python-dotenv
+requests
+pyyaml
+streamlit
+mcp
+pytest
+trio
