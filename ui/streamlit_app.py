@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-
 import streamlit as st
 from app.graph import app
 
@@ -21,6 +20,7 @@ st.markdown("""
 .label{font-size:13px;color:#888}
 .advisory{padding:18px;border-radius:16px;background:#20242c;border-left:4px solid #ff9f1c;margin-top:12px}
 .sop{font-size:13px;color:#888;margin-top:10px}
+.error{padding:18px;border-radius:16px;background:#20242c;border-left:4px solid #ff4b4b;margin-top:12px}
 </style>
 """,unsafe_allow_html=True)
 
@@ -47,39 +47,41 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         if message["role"]=="assistant" and "data" in message:
             data=message["data"]
-            weather=data["weather"]
-            decision=data["decision"]
-            sop=data["sop"]
-
+            weather=data.get("weather",{})
+            sop=data.get("sop")
+            response=message.get("content","")
+            if weather:
+                st.markdown(
+                    f"""
+                    <div class="weather-card">
+                        <b>📍 {data.get("city","Unknown location")}</b>
+                        <div style="display:flex;gap:45px;margin-top:18px">
+                            <div><div class="metric">{weather.get("temperature_2m","N/A")}°C</div><div class="label">Temperature</div></div>
+                            <div><div class="metric">{weather.get("wind_speed_10m","N/A")} km/h</div><div class="label">Wind</div></div>
+                            <div><div class="metric">{weather.get("precipitation","N/A")} mm</div><div class="label">Rain</div></div>
+                            <div><div class="metric">{weather.get("uv_index","N/A")}</div><div class="label">UV Index</div></div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             st.markdown(
                 f"""
-                <div class="weather-card">
-                    <b>📍 {data["city"]}</b>
-                    <div style="display:flex;gap:45px;margin-top:18px">
-                        <div><div class="metric">{weather.get("temperature_2m")}°C</div><div class="label">Temperature</div></div>
-                        <div><div class="metric">{weather.get("wind_speed_10m")} km/h</div><div class="label">Wind</div></div>
-                        <div><div class="metric">{weather.get("precipitation")} mm</div><div class="label">Rain</div></div>
-                        <div><div class="metric">{weather.get("uv_index")}</div><div class="label">UV Index</div></div>
-                    </div>
-                </div>
                 <div class="advisory">
                     <b>Weather Advisory</b><br><br>
-                    {decision.get("reason","No applicable SOP applies.")}
+                    {response}
                     <div class="sop">SOP: {sop or "No applicable SOP"}</div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
         else:
-            st.write(message["content"])
+            st.write(message.get("content",""))
 
 query=st.chat_input("Ask about cycling, hiking or water activities...")
 
 if query:
-    st.session_state.messages.append({
-        "role":"user",
-        "content":query
-    })
+    st.session_state.messages.append({"role":"user","content":query})
 
     with st.chat_message("user"):
         st.write(query)
@@ -105,38 +107,52 @@ if query:
         location=result.get("location",{})
         decision=result.get("decision",{})
         selected=result.get("selected_sop",{})
+        response=result.get("response","")
+        error=result.get("error")
 
-        st.markdown(
-            f"""
-            <div class="weather-card">
-                <b>📍 {location.get("city","Unknown location")}</b>
-                <div style="display:flex;gap:45px;margin-top:18px">
-                    <div><div class="metric">{weather.get("temperature_2m")}°C</div><div class="label">Temperature</div></div>
-                    <div><div class="metric">{weather.get("wind_speed_10m")} km/h</div><div class="label">Wind</div></div>
-                    <div><div class="metric">{weather.get("precipitation")} mm</div><div class="label">Rain</div></div>
-                    <div><div class="metric">{weather.get("uv_index")}</div><div class="label">UV Index</div></div>
+        if weather:
+            st.markdown(
+                f"""
+                <div class="weather-card">
+                    <b>📍 {location.get("city","Unknown location")}</b>
+                    <div style="display:flex;gap:45px;margin-top:18px">
+                        <div><div class="metric">{weather.get("temperature_2m","N/A")}°C</div><div class="label">Temperature</div></div>
+                        <div><div class="metric">{weather.get("wind_speed_10m","N/A")} km/h</div><div class="label">Wind</div></div>
+                        <div><div class="metric">{weather.get("precipitation","N/A")} mm</div><div class="label">Rain</div></div>
+                        <div><div class="metric">{weather.get("uv_index","N/A")}</div><div class="label">UV Index</div></div>
+                    </div>
                 </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+                """,
+                unsafe_allow_html=True
+            )
 
-        st.markdown(
-            f"""
-            <div class="advisory">
-                <b>Weather Advisory</b><br><br>
-                {result.get("response","")}
-                <div class="sop">
-                    SOP: {selected.get("id","No applicable SOP")}
+        if error:
+            st.markdown(
+                f"""
+                <div class="error">
+                    <b>Weather Advisory</b><br><br>
+                    {response}
                 </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"""
+                <div class="advisory">
+                    <b>Weather Advisory</b><br><br>
+                    {response}
+                    <div class="sop">
+                        SOP: {selected.get("id","No applicable SOP")}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         st.session_state.messages.append({
             "role":"assistant",
-            "content":result.get("response",""),
+            "content":response,
             "data":{
                 "city":location.get("city","Unknown location"),
                 "weather":weather,
