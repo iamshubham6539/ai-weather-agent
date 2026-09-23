@@ -59,7 +59,7 @@ def fetch_weather(location:dict):
         return {"error":"Invalid location coordinates."}
 
     proxy_url=os.getenv("WEATHER_PROXY_URL")
-    proxy_token=os.getenv("WEATHER_PROXY_TOKEN")
+    proxy_token=os.getenv("WEATHER_PROXY_TOKEN","").strip()
 
     if not proxy_url or not proxy_token:
         return {"error":"Weather proxy is not configured."}
