@@ -33,46 +33,14 @@ graph.add_node("no_sop_response", no_sop_response)
 graph.add_node("error_response", error_response)
 
 graph.add_edge(START, "understand_request")
-
-graph.add_conditional_edges(
-    "understand_request",
-    route_after_understanding
-)
-
-graph.add_conditional_edges(
-    "resolve_location",
-    route_after_location
-)
-
-graph.add_conditional_edges(
-    "fetch_weather",
-    route_after_weather
-)
-
-graph.add_edge(
-    "match_sops",
-    "select_sop"
-)
-
-graph.add_conditional_edges(
-    "select_sop",
-    route_after_sop_selection
-)
-
-graph.add_edge(
-    "generate_response",
-    END
-)
-
-graph.add_edge(
-    "no_sop_response",
-    END
-)
-
-graph.add_edge(
-    "error_response",
-    END
-)
+graph.add_conditional_edges("understand_request",route_after_understanding)
+graph.add_conditional_edges("resolve_location",route_after_location)
+graph.add_conditional_edges("fetch_weather",route_after_weather)
+graph.add_edge("match_sops","select_sop")
+graph.add_conditional_edges("select_sop",route_after_sop_selection)
+graph.add_edge("generate_response",END)
+graph.add_edge("no_sop_response",END)
+graph.add_edge("error_response",END)
 
 memory = MemorySaver()
 app = graph.compile(checkpointer=memory)

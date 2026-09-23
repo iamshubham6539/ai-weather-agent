@@ -30,6 +30,7 @@ def match_sops(activity: str, weather: dict):
             if condition["event"] in weather_events:
                 if sop_activity == "all_outdoor":
                     matched_sops.append(sop)
+
             continue
 
         if sop_activity != activity:
