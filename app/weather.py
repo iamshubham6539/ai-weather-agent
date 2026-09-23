@@ -1,6 +1,53 @@
 import os
 import requests
 
+HEADERS={"User-Agent":"weather-advisory-support-bot/1.0"}
+
+def resolve_location(city:str):
+    if not city:
+        return {"error":"Could not determine the location."}
+
+    if city.lower().strip()=="bangalore":
+        city="Bengaluru"
+
+    url="https://geocoding-api.open-meteo.com/v1/search"
+
+    params={
+        "name":city,
+        "count":10,
+        "language":"en",
+        "format":"json",
+        "countryCode":"IN"
+    }
+
+    try:
+        response=requests.get(
+            url,
+            params=params,
+            headers=HEADERS,
+            timeout=15
+        )
+
+        response.raise_for_status()
+        data=response.json()
+        results=data.get("results",[])
+
+        if not results:
+            return {"error":f"Could not resolve location: {city}"}
+
+        place=results[0]
+
+        return {
+            "location":{
+                "city":place["name"],
+                "latitude":place["latitude"],
+                "longitude":place["longitude"]
+            }
+        }
+
+    except requests.RequestException as e:
+        return {"error":f"Location service is unavailable: {e}"}
+
 def fetch_weather(location:dict):
     if not location:
         return {"error":"Location is unavailable."}
@@ -41,7 +88,7 @@ def fetch_weather(location:dict):
         hourly=data.get("hourly",{})
         probabilities=hourly.get("precipitation_probability",[])
 
-        current["precipitation_probability"] = (
+        current["precipitation_probability"]=(
             probabilities[0] if probabilities else None
         )
 
@@ -58,3 +105,11 @@ def fetch_weather(location:dict):
 
     except requests.RequestException as e:
         return {"error":f"Weather service is unavailable: {e}"}
+
+def detect_weather_events(weather:dict):
+    weather_code=weather.get("weather_code")
+
+    if weather_code in [95,96,99]:
+        return ["thunderstorm"]
+
+    return []
